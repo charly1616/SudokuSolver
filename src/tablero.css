@@ -1,0 +1,38 @@
+.tablero-sudoku {
+  display: grid;
+  grid-template-columns: repeat(3, auto);
+  padding: 5px;
+  width: fit-content;
+  margin: 0 auto;
+}
+
+.m-sudoku {
+  display: grid;
+  grid-template-columns: repeat(3, 30px);
+  grid-template-rows: repeat(3, 30px);
+  border: 4px solid black;
+}
+
+.borde{
+  padding: 5px;
+  background-color: #ffff;
+  border: 4px solid black;
+}
+
+.celda-input {
+  border: 2px solid black;
+  width: 30px;
+  height: 30px;
+  text-align: center;
+  font-weight: bold;
+  font-size: 16px;
+  outline: none;
+}
+
+.claro {
+  background-color: #ffffff;
+}
+
+.oscuro {
+  background-color: #f4a261;
+}
