@@ -22,19 +22,35 @@ function checkColisions(sudoku){
 }
 
 
-function checkColision(sudoku, position){
+function checkColision(sudoku, position) {
+    const value = sudoku[position.i][position.j];
+
     return {
-        colHorizontal: sudoku[position.i].map( (u,l) => {
-            return (u === sudoku[position.i][position.j]) ? {i:position.i, j:l} : null;
-        }).filter(x => x && (x.i !== position.i || x.j !== position.j)),
-        colVertical: sudoku.map( (e, k) => {
-            return {i:k, j:position.j};
-        }).filter( x => sudoku[x.i][x.j] === sudoku[position.i][position.j] && (x.i !== position.i || x.j !== position.j)),
-        colsSquare: sudoku.flatMap( (fila, k) => {
-            return fila.map( (_, l)=> {return {i:k, j:l}})
-        }).filter( x => (x.i/3 == position.i/3) && (x.j/3 == position.j/3) &&
-         (sudoku[x.i][x.j] === sudoku[position.i][position.j]) && (x.i !== position.i || x.j !== position.j))
-    }
+        colHorizontal: sudoku[position.i]
+            .map((u, j) => (u === value && j !== position.j ? { i: position.i, j } : null))
+            .filter(x => x),
+
+        colVertical: sudoku
+            .map((row, i) => (row[position.j] === value && i !== position.i ? { i, j: position.j } : null))
+            .filter(x => x),
+
+        colsSquare: (() => {
+            const res = [];
+            const boxRowStart = Math.floor(position.i / 3) * 3;
+            const boxColStart = Math.floor(position.j / 3) * 3;
+
+            for (let i = boxRowStart; i < boxRowStart + 3; i++) {
+                for (let j = boxColStart; j < boxColStart + 3; j++) {
+                    if (i === position.i && j === position.j) continue;
+                    if (sudoku[i][j] === value) {
+                        res.push({ i, j });
+                    }
+                }
+            }
+
+            return res;
+        })()
+    };
 }
 
 const sud = [
@@ -64,7 +80,7 @@ function getPositionsToFill(sudoku) {
 
 
 function getPosibleValues(sudoku, position){
-    let values = [true, true, true,true, true, true,true, true, true]
+    let values = [true, true, true,true, true, true, true, true, true]
 
     //Discard horizontal
     sudoku[position.i].forEach(e => {
@@ -81,12 +97,16 @@ function getPosibleValues(sudoku, position){
     });
 
 
-    sudoku.filter( (e,i) => i/3===position.i/3).forEach( row => {
-        row.filter( (u,j) => j/3===position.j).forEach( (a) => {
-            if (a === -1) return;
-            values[a-1] = false
-        })
-    })
+    let boxRowStart = Math.floor(position.i / 3) * 3;
+    let boxColStart = Math.floor(position.j / 3) * 3;
+
+    for (let i = boxRowStart; i < boxRowStart + 3; i++) {
+        for (let j = boxColStart; j < boxColStart + 3; j++) {
+            let val = sudoku[i][j];
+            if (val === -1) continue;
+            values[val - 1] = false;
+        }
+    }
 
 
     return values.map( (e,i) => (e)? (i+1) : null).filter(x => x)
@@ -96,51 +116,88 @@ function getPosibleValues(sudoku, position){
 
 //console.log(getPositionsToFill(sud))
 
+// position: {i, j}
+// value: número que se coloca en esa celda
+// posibleVals: Array de forma [[{i, j}, [números posibles]], ...]
+function removePosibleValues(position, value, posibleVals) {
+    const boxRowStart = Math.floor(position.i / 3) * 3;
+    const boxColStart = Math.floor(position.j / 3) * 3;
+
+
+    //console.log("=================================================")
+    posibleVals.forEach(e => {
+        
+        const [pos, possibles] = e;
+
+        // Si no está en la misma fila, columna ni subcuadro, omitir
+        const sameRow = pos.i === position.i;
+        const sameCol = pos.j === position.j;
+        const sameBox = (
+            Math.floor(pos.i / 3) === Math.floor(position.i / 3) &&
+            Math.floor(pos.j / 3) === Math.floor(position.j / 3)
+        );
+
+        if (sameRow || sameCol || sameBox) {
+            // Eliminar el valor si está presente
+            const index = possibles.indexOf(value);
+            if (index !== -1) {
+                possibles.splice(index, 1);
+            }
+        }
+    });
+}
+
+
 
 export default function solver( sudoku ) {
     if (sudoku.length !== 9 || sudoku[0].length !== 9) return null;
+    //Obtengo Posiciones a llenar
     let positionsToFill = getPositionsToFill(sudoku);
-    const posNfillsconst = positionsToFill.map( e => [e,getPosibleValues(sudoku, e)])
-    let posNfills = positionsToFill.map( e => [e,getPosibleValues(sudoku, e)])
+    //Valor cambiante de los posibles valores de cada posicion
+    let posNfills = [positionsToFill.map( e => [e,getPosibleValues(sudoku, e)])]
 
-
+    //El estado de llenado del sudoku
     let fillings = []
     do {
         // Si ya no quedan más valores posibles para esta posición, retrocedemos
-        if (posNfills[fillings.length][1].length === 0) {
+        if (posNfills[posNfills.length-1][fillings.length][1].length === 0) {
             // Si tampoco hay posiciones anteriores, el Sudoku no se puede resolver
             if (fillings.length === 0) {console.log("NO SE PUEDE RESOLVER");return null;}
 
             // Retroceder al estado anterior
             fillings.pop();
-            console.log("NO SE PUDO, RETROCEDER, " + fillings.length)
-
-            // Restaurar los posibles valores desde la copia original
-            posNfills = posNfills.map((e, i) => 
-                i <= fillings.length+1 ? e : [posNfillsconst[i][0], [...posNfillsconst[i][1]]]
-            );
+            posNfills.pop();
+            //console.log("NO SE PUDO, RETROCEDER, " + fillings.length)
 
             continue; // importante: continuar con el ciclo después de retroceder
         }
 
         // Tomar la posición actual y el próximo número a probar
-        const [pos2Change, possibleNums] = posNfills[fillings.length];
+        const [pos2Change, possibleNums] = posNfills[posNfills.length-1][fillings.length];
+        if (possibleNums.length === 0) {
+            fillings.pop();
+            posNfills.pop();
+            //console.log("NO SE PUDO, RETROCEDER, " + fillings.length)
+            continue;
+        }
+
         const num = possibleNums.pop();
-        console.log(`[${pos2Change.i}, ${pos2Change.j}]` + " " + num)
+        // Remover valores que ya no son posibles
+        posNfills.push( posNfills[posNfills.length-1].map( ([pos, ums], i) => [pos, [...ums]] ))
+        removePosibleValues(pos2Change, num, posNfills[posNfills.length-1])
 
         // Clonar el sudoku actual
-        const newSud = ((fillings.length > 1) ? fillings[fillings.length-1] : sudoku).map(row => [...row]);
+        const newSud = ((fillings.length > 0) ? fillings[fillings.length-1] : sudoku).map(row => [...row]);
         newSud[pos2Change.i][pos2Change.j] = num;
+        fillings.push(newSud)
 
-        // Si hay colisiones, no continuar con esta rama
-        // console.log(Object.entries(checkColision(newSud,pos2Change)).filter(([cle,val]) => val.length > 0))
-        if (Object.entries(checkColision(newSud,pos2Change)).filter(([cle,val]) => val.length > 0).length > 0) continue;
 
+        //console.log(newSud.map(e => e.join(' ')).join('\n').replaceAll("-1", "_"))
         // Agregar el nuevo estado a la pila de intentos
-        fillings.push(newSud);
-        console.log("AUMENTAR A " + fillings.length)
+        //fillings.push(newSud);
+        //console.log("AUMENTAR A " + fillings.length)
 
-    } while (fillings.length < posNfills.length);
+    } while (fillings.length < posNfills[posNfills.length-1].length);
 
     
     
