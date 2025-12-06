@@ -1,33 +1,25 @@
-/* Estilo general de la página */
-.overlay-image {
-  top: 0;
-  left: 0;
-  position: absolute;
+@import url('https://fonts.googleapis.com/css2?family=Fredoka&display=swap');
+
+* {
   margin: 0;
   padding: 0;
-  height: 100vh;
-  width: 100vw;
-  background-color: rgba(255, 151, 66, 0.9);
-  font-family: Arial, sans-serif;
-  
+  box-sizing: border-box;
 }
 
-/* Contenedor para la imagen */
 body {
-  top: 0;
-  left: 0;
-  background: url('Patron.png') repeat center center;
-  height: 100vh;
-  width: 100vw;
-  overflow: hidden;
+  background: linear-gradient(rgba(255, 151, 66, 0.8), rgba(255, 151, 66, 0.8)), url('Patron.png') repeat center center;
+  background-color: #FF9742;
+  font-family: 'Fredoka', sans-serif;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
 }
 
-/* Contenido principal encima de la imagen */
-.main-content {
-  background-color: transparent;
-  position: relative;
-  z-index: 2;
-  padding: 2rem;
-  color: #fff; /* Color claro para destacar sobre el fondo */
-  text-align: center;
+#root {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }

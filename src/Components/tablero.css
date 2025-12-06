@@ -1,36 +1,61 @@
 :root {
-  --cellSize: 40px;
+  --cellSize: 50px;
 }
 
 .tablero-sudoku {
   display: grid;
-  grid-template-columns: repeat(3, auto);
+  grid-template-columns: repeat(9, var(--cellSize));
+  grid-template-rows: repeat(9, var(--cellSize));
+  gap: 0;
   padding: 5px;
   width: fit-content;
   margin: 0 auto;
-}
-
-.m-sudoku {
-  display: grid;
-  grid-template-columns: repeat(3, var(--cellSize));
-  grid-template-rows: repeat(3, var(--cellSize));
-  border: 4px solid black;
-}
-
-.borde{
-  padding: 5px;
-  background-color: #ffff;
-  border: 4px solid black;
+  background-color: #000;
+  border-radius: 2px;
+  box-shadow: 0 8px 0 rgba(0, 0, 0, 0.25);
+  border: 10px solid #000;
+  outline: 6px solid #fff;
+  outline-offset: -11px;
 }
 
 .celda-input {
-  border: 2px solid black;
+  border: 1px solid #000;
   width: var(--cellSize);
   height: var(--cellSize);
   text-align: center;
   font-weight: bold;
-  font-size: 16px;
+  font-size: 24px;
+  font-family: 'Fredoka', sans-serif;
   outline: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  border-radius: 0;
+  background-color: #ffffff;
+  caret-color: transparent;
+}
+
+/* 3x3 box separator borders */
+.celda-input:nth-child(3n) {
+  border-right: 3px solid #000;
+}
+
+.celda-input.third-row {
+  border-bottom: 3px solid #000;
+}
+
+/* Cell styling */
+.celda-input:hover {
+  box-shadow: inset 0 0 0 2px #FFB86C;
+}
+
+.celda-input:focus {
+  box-shadow: inset 0 0 0 3px #FF9742;
+  border-color: #FF9742;
+}
+
+.celda-input::placeholder {
+  content: '·';
+  color: #ccc;
 }
 
 .claro {
@@ -38,5 +63,19 @@
 }
 
 .oscuro {
-  background-color: #f4a261;
+  background-color: #ffe4bb;
+}
+
+.celda-input[value]:not([value='']) {
+  font-weight: bold;
+  color: #000;
+}
+
+.celda-input.error {
+  border: 3px solid #FF0000 !important;
+}
+
+.celda-input.solver {
+  color: #0066CC !important;
+  font-weight: bold;
 }
