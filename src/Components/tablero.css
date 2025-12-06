@@ -24,7 +24,7 @@
   height: var(--cellSize);
   text-align: center;
   font-weight: bold;
-  font-size: 24px;
+  font-size: 26px;
   font-family: 'Fredoka', sans-serif;
   outline: none;
   cursor: pointer;
@@ -63,7 +63,7 @@
 }
 
 .oscuro {
-  background-color: #ffe4bb;
+  background-color: rgb(255,179,98);
 }
 
 .celda-input[value]:not([value='']) {

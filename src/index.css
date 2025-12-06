@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Fredoka&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;700;900&display=swap');
 
 * {
   margin: 0;
@@ -7,8 +7,8 @@
 }
 
 body {
-  background: linear-gradient(rgba(255, 151, 66, 0.8), rgba(255, 151, 66, 0.8)), url('Patron.png') repeat center center;
-  background-color: #FF9742;
+  background: linear-gradient(rgba(255,179,98,0.9), rgba(255,179,98,0.9)), url('Patron.png') repeat center center;
+  background-color: #ffb362;
   font-family: 'Fredoka', sans-serif;
   min-height: 100vh;
   display: flex;
